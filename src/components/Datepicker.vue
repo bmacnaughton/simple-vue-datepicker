@@ -15,14 +15,7 @@
                 v-bind:class="{ 'disabled' : nextMonthDisabled(currDate) }">&gt;</span>
         </header>
         <span class="cell day-header" v-for="d in daysOfWeek">{{ d }}</span>
-        <!--
-        <span class="cell day blank" v-for="d in blankDays"></span><span class="cell day"
-            v-for="day in days"
-            track-by="timestamp"
-            :class="dayClasses(day)"
-            @click="selectDate(day)">{{ day.date }}</span>
-        -->
-        <!--<div class="cell day blank" v-for="d in blankDays"></div>-->
+
         <div class="cell day" v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">{{ day.date }}</div>
     </div>
     <div class="day-items">
@@ -486,31 +479,6 @@ export default {
       return disabled
     },
 
-    /**
-     * Set the datepicker value
-     * @param {Date|String|null} date
-     */
-    /*
-    setValue (date) {
-      if (typeof date === 'string') {
-        let parsed = new Date(date)
-        date = isNaN(parsed.valueOf()) ? null : parsed
-      }
-      if (!date) {
-        const d = new Date()
-        if (this.initialDate) {
-          this.currDate = this.initialDate.getTime()
-        } else {
-          this.currDate = new Date(d.getFullYear(), d.getMonth(), 1).getTime()
-        }
-        this.selectedDate = null
-        return
-      }
-      this.selectedDate = date
-      this.currDate = new Date(date.getFullYear(), date.getMonth(), 1).getTime()
-    },
-    // */
-
     dayClasses (day) {
       return {
         'selected': day.isSelected,
@@ -524,10 +492,12 @@ export default {
 
   mounted () {
     if (this.value) {
-      this.setSelectedDate(this.getDateObject(this.value))
+      this.selectDate(this.getDateObject(this.value))
       this.setViewDate(this.getDateObject(this.value))
     } else if (this.initialDate) {
       this.setViewDate(this.getDateObject(this.initialDate))
+    } else {
+      this.setViewDate(new Date())
     }
     if (this.isInline) {
       this.showDayCalendar()
