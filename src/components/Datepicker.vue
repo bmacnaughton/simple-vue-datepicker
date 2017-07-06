@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker" :class="wrapperClass">
+  <div class="vdp-datepicker">
 
     <!-- Day View -->
     <div class="vdp-datepicker__calendar" v-show="showDayView" :style="calendarStyle">
@@ -36,16 +36,6 @@ export default {
       type: Date,
       default: null
     },
-    name: {
-      value: String
-    },
-    id: {
-      value: String
-    },
-    format: {
-      value: String,
-      default: 'dd MMM yyyy'
-    },
     language: {
       value: String,
       default: 'en'
@@ -53,48 +43,16 @@ export default {
     disabled: {
       type: Object
     },
-    highlighted: {
-      type: Object
-    },
-    placeholder: {
-      type: String
-    },
     inline: {
       type: Boolean
-    },
-    inputClass: {
-      type: [String, Object]
-    },
-    wrapperClass: {
-      type: [String, Object]
     },
     clearButton: {
       type: Boolean,
       default: false
     },
-    clearButtonIcon: {
-      type: String,
-      default: ''
-    },
-    calendarButton: {
-      type: Boolean,
-      default: false
-    },
-    calendarButtonIcon: {
-      type: String,
-      default: ''
-    },
     initialView: {
       type: String,
       default: 'day'
-    },
-    disabledPicker: {
-      type: Boolean,
-      default: false
-    },
-    required: {
-      type: Boolean,
-      default: false
     }
   },
   data () {
@@ -105,32 +63,15 @@ export default {
        * {Number}
        */
       currDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime(),
-      /*
-       * Selected Date
-       * {Date}
-       */
+      // selected date {Date}
       selectedDate: null,
+      // which month is being displayed in the calendar
       viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      /*
-       * Flags to show calendar views
-       * {Boolean}
-       */
-      showDayView: false,
-      showMonthView: false,
-      showYearView: false,
-      /*
-       * Positioning
-       */
-      calendarHeight: 0
+
+      showDayView: false
     }
   },
-  /*
-  watch: {
-    value (value) {
-      this.setValue(value)
-    }
-  },
-  // */
+
   computed: {
     viewMonth () {
       return this.viewDate
@@ -186,7 +127,9 @@ export default {
       // based on this.currDate
       // const d = new Date(this.dayCalendarDate)
       const d = this.viewMonth
-      let dObj = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+      // let dObj = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+      // start days at beginning
+      let dObj = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0)
       let dim = DateUtils.daysInMonth
       let daysInMonth = dim(dObj.getFullYear(), dObj.getMonth())
       for (let i = 0; i < daysInMonth; i++) {
@@ -298,6 +241,18 @@ export default {
       return false
     },
 
+    //
+    // normalize a date, i.e., adjust time to 00:00:00.000
+    //
+    norm (date) {
+      return new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0, 0, 0
+      )
+    },
+
     /**
      * Whether a day is selected
      * @param {Date}
@@ -313,30 +268,29 @@ export default {
      * @return {Boolean}
      */
     isDisabledDate (date) {
-      let disabled = false
-
-      if (typeof this.disabled === 'undefined') {
+      if (!this.disabled) {
         return false
       }
 
-      if (typeof this.disabled.dates !== 'undefined') {
-        this.disabled.dates.forEach((d) => {
-          if (date.toDateString() === d.toDateString()) {
-            disabled = true
-            return true
-          }
-        })
+      if (this.disabled.dates) {
+        if (this.disabled.dates.some(d => d.getTime() === date.getTime())) {
+          return true
+        }
       }
-      if (typeof this.disabled.to !== 'undefined' && this.disabled.to && date < this.disabled.to) {
-        disabled = true
+
+      if (this.disabled.to && date.getTime() < this.norm(this.disabled.to).getTime()) {
+        return true
       }
-      if (typeof this.disabled.from !== 'undefined' && this.disabled.from && date > this.disabled.from) {
-        disabled = true
+
+      if (this.disabled.from && date.getTime() > this.norm(this.disabled.from).getTime()) {
+        return true
       }
-      if (typeof this.disabled.days !== 'undefined' && this.disabled.days.indexOf(date.getDay()) !== -1) {
-        disabled = true
+
+      if (this.disabled.days) {
+        return this.disabled.days.indexOf(date.getDay()) !== -1
       }
-      return disabled
+
+      return false
     },
 
     /**
