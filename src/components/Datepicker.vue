@@ -133,16 +133,9 @@ export default {
   // */
   computed: {
     viewMonth () {
-      // return this.selectedDate ? this.selectedDate : this.viewDate
       return this.viewDate
     },
 
-    formattedValue () {
-      if (!this.selectedDate) {
-        return null
-      }
-      return DateUtils.formatDate(new Date(this.selectedDate), this.format, this.translation)
-    },
     translation () {
       return DateLanguages.translations[this.language]
     },
@@ -258,9 +251,6 @@ export default {
       this.$emit('selected', null)
     },
 
-    /**
-     * @param {Object} day
-     */
     selectDate (day) {
       if (day.isSelected) {
         this.clearDate()
@@ -284,7 +274,6 @@ export default {
       let d = new Date(this.viewMonth)
       d.setMonth(d.getMonth() - 1)
       this.viewDate = d
-      // this.selectedDate = null
       this.$emit('changedMonth', d)
     },
 
@@ -300,7 +289,6 @@ export default {
       let daysInMonth = DateUtils.daysInMonth(d.getFullYear(), d.getMonth())
       d.setDate(d.getDate() + daysInMonth)
       this.viewDate = d
-      // this.selectedDate = null
       this.$emit('changedMonth', d)
     },
 
@@ -483,8 +471,13 @@ export default {
 
   mounted () {
     if (this.value) {
-      this.selectDate(this.getDateObject(this.value))
-      this.setViewDate(this.getDateObject(this.value))
+      let d = this.getDateObject(this.value)
+      if (d) {
+        this.setDate(d.getTime())
+        this.setViewDate(d)
+      } else {
+        this.setViewDate(new Date())
+      }
     } else if (this.initialDate) {
       this.setViewDate(this.getDateObject(this.initialDate))
     } else {
