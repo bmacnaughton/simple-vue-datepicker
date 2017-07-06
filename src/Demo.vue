@@ -139,6 +139,12 @@ export default {
     dateClicked (date) {
       this.selectedDate = date
     }
+  },
+
+  watch: {
+    date (newDate, oldDate) {
+      console.log('demo watch date', newDate)
+    }
   }
 }
 </script>
