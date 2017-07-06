@@ -18,10 +18,6 @@
 
         <div class="cell day" v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">{{ day.date }}</div>
     </div>
-    <div class="day-items">
-      {{ dayItemsTitle }}
-    </div>
-
   </div>
 </template>
 
@@ -263,7 +259,6 @@ export default {
 
     clearDate () {
       this.selectedDate = null
-      this.$emit('cleared')
       this.$emit('selected', null)
     },
 
