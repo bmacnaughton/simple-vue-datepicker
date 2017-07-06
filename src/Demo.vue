@@ -71,13 +71,15 @@
     <div class="example">
       <h3>Inline datepicker</h3>
       <datepicker
+        v-model="date"
         :inline="true"
         :initialDate="initialDate"
         :disabled="disabled"
+        @selected="dateClicked"
       ></datepicker>
-      <code>
-          &lt;datepicker :inline="true"&gt;&lt;/datepicker&gt;
-      </code>
+    </div>
+    <div>
+      {{ panelTitle }}
     </div>
 
   </div>
@@ -104,9 +106,17 @@ export default {
       state: state,
       language: 'en',
       languages: DateLanguages.translations,
-      initialDate: new Date('2017-09-01T12:12:12')
+      initialDate: new Date('2017-09-01T12:12:12'),
+      selectedDate: null,
+      date: new Date()
     }
   },
+  computed: {
+    panelTitle () {
+      return this.selectedDate ? this.selectedDate.toDateString() : 'Select a date to see available booking times'
+    }
+  },
+
   methods: {
     disableTo (val) {
       if (typeof this.disabled.to === 'undefined') {
@@ -125,6 +135,9 @@ export default {
         }
       }
       this.disabled.from = val
+    },
+    dateClicked (date) {
+      this.selectedDate = date
     }
   }
 }
