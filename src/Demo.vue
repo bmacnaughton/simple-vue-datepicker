@@ -101,14 +101,18 @@ export default {
   data () {
     return {
       format: 'd MMMM yyyy',
-      disabled: {days: [0]},
       eventMsg: null,
       state: state,
       language: 'en',
       languages: DateLanguages.translations,
       initialDate: new Date('2017-09-01T12:12:12'),
       selectedDate: null,
-      date: new Date()
+      date: new Date(),
+      disabled: {
+        days: [0],
+        to: new Date(),
+        from: this.endDate()
+      }
     }
   },
   computed: {
@@ -118,26 +122,13 @@ export default {
   },
 
   methods: {
-    disableTo (val) {
-      if (typeof this.disabled.to === 'undefined') {
-        this.disabled = {
-          to: null,
-          from: this.disabled.from
-        }
-      }
-      this.disabled.to = val
-    },
-    disableFrom (val) {
-      if (typeof this.disabled.from === 'undefined') {
-        this.disabled = {
-          to: this.disabled.to,
-          from: null
-        }
-      }
-      this.disabled.from = val
-    },
     dateClicked (date) {
       this.selectedDate = date
+    },
+    endDate () {
+      let d = new Date()
+      d.setMonth((d.getMonth() + 3) % 12)
+      return d
     }
   },
 
