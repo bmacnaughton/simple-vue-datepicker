@@ -8,6 +8,12 @@ Derived and stripped down from https://github.com/charliekassel/vuejs-datepicker
 
 A datepicker Vue component. Compatible with Vue 2.x
 
+N.B. - this is in a very raw intermediate state and is not meant for general public consumption at this point. I'm working on another project and will be cleaning this up over time but for now:
+
+1. it's not tested except for my specific use cases
+2. the documentation is inaccurate - it has not been scrubbed
+3. it's only partially stripped down - there are lots of relics
+
 ## Install
 
 ``` bash
@@ -30,7 +36,7 @@ Vue.component('my-component', {
 <datepicker></datepicker>
 ```
 
-*value* prop if passed should be a Date object
+*value* prop sets the selectedDate. should be a Date object. defaults to null - no date selected.
 
 ``` html
 <script>
@@ -40,15 +46,15 @@ var state = {
 </script>
 <datepicker :value="state.date"></datepicker>
 ```
-support name attribute for normal html form submission
-``` html
-<datepicker :value="state.date" name="uniquename"></datepicker>
-```
+
 Use `v-model` for two-way binding
 ``` html
-<datepicker v-model="state.date" name="uniquename"></datepicker>
+<datepicker v-model="state.date"></datepicker>
 ```
+
 Emits events
+
+Some of these might still work
 ``` html
 <datepicker v-on:selected="doSomethingInParentComponentFunction" v-on:opened="datepickerOpenedFunction" v-on:closed="datepickerClosedFunction">
 ```
@@ -61,24 +67,9 @@ Inline always open version
 | Prop                  | Type         | Default     | Description                              |
 |-----------------------|--------------|-------------|------------------------------------------|
 | value                 | Date/String  |             | Date value of the datepicker             |
-| name                  | String       |             | Input name property                      |
-| id                    | String       |             | Input id                                 |
-| format                | String       | dd MMM yyyy | Date formatting string                   |
 | language              | String       | en          | Translation for days and months          |
 | disabled              | Object       |             | See below for configuration              |
-| placeholder           | String       |             | Input placeholder text                   |
 | inline                | Boolean      |             | To show the datepicker always open       |
-| input-class           | String|Object|             | CSS class applied to the input el        |
-| wrapper-class         | String|Object|             | CSS class applied to the outer div       |
-| monday-first          | Boolean      | false       | To start the week on Monday              |
-| clear-button          | Boolean      | false       | Show an icon for clearing the date       |
-| clear-button-icon     | String       |             | Use icon for button (ex: fa fa-times)    |
-| calendar-button       | Boolean      | false       | Show an icon that that can be clicked    |
-| calendar-button-icon  | String       |             | Use icon for button (ex: fa fa-calendar) |
-| bootstrapStyling      | Boolean      | false       | Output bootstrap styling classes         |
-| initial-view          | String       | 'day'       | If 'month' or 'year', open on that view  |
-| disabled-picker       | Boolean      | false       | If true, disable Datepicker on screen    |
-| required              | Boolean      | false       | Sets html required attribute on input    |
 
 ## Events
 
@@ -89,29 +80,7 @@ These events are emitted on actions in the datepicker
 | opened        |            | The picker is opened          |
 | closed        |            | The picker is closed          |
 | selected      | Date\|null | A date has been selected      |
-| input         | Date\|null | Input value has been modified |
 | cleared       |            | Selected date has been cleared|
-| changedMonth  | Object     | Month page has been changed   |
-| changedYear   | Object     | Year page has been changed    |
-| changedDecade | Object     | Decade page has been changed  |
-
-
-## Date formatting
-
-NB. This is not very robust at all - use at your own risk! Needs a better implementation.
-
-| Token | Desc                   | Example     |
-|-------|------------------------|-------------|
-| d     | day                    | 1           |
-| dd    | 0 prefixed day         | 01          |
-| D     | abbr day               | Mon         |
-| su    | date suffix            | st, nd, rd  |
-| M     | month number (1 based) | 1 (for Jan) |
-| MM    | 0 prefixed month       | 01          |
-| MMM   | abbreviated month name | Jan         |
-| MMMM  | month name             | January     |
-| yy    | two digit year         | 16          |
-| yyyy  | four digit year        | 2016        |
 
 
 #### Disabled Dates
@@ -136,8 +105,8 @@ var state = {
 ```
 
 #### Highlight Dates
-Dates can be highlighted (e.g. for marking an appointment) in a number of ways. Important: You can only highlight dates, that aren't disabled.
-Note: Both `to` and `from` properties are require to define a range of dates to highlight
+Dates can be highlighted (e.g. for marking an appointment) in a number of ways. Important: You can only highlight dates that aren't disabled.
+Note: Both `to` and `from` properties are required to define a range of dates to highlight
 
 ``` html
 <script>
