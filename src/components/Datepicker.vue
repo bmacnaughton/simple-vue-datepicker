@@ -137,10 +137,6 @@ export default {
       return this.viewDate
     },
 
-    dayItemsTitle () {
-      return this.selectedDate ? this.selectedDate.toDateString() : 'Choose a date to see available bookings'
-    },
-
     formattedValue () {
       if (!this.selectedDate) {
         return null
