@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker">
+  <div class="svd-outer">
 
     <!-- Day View -->
     <div :class="cc.svdCalWrapper" v-show="showDayView" :style="calendarStyle">
@@ -461,7 +461,7 @@ export default {
 
 $width = 300px
 
-.vdp-datepicker
+.svd-outer
     position relative
     text-align left
     *
