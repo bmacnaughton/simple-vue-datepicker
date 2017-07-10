@@ -70,6 +70,7 @@ Inline always open version
 | language              | String       | en          | Translation for days and months          |
 | disabled              | Object       |             | See below for configuration              |
 | inline                | Boolean      |             | To show the datepicker always open       |
+| initialViewDate       | Date/String  | value       | Year/month to initially show on calendar |
 
 ## Events
 

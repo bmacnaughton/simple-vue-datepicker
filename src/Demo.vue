@@ -73,7 +73,7 @@
       <datepicker
         v-model="date"
         :inline="true"
-        :initialDate="initialDate"
+        :initialViewDate="initialViewDate"
         :disabled="disabled"
         @selected="dateClicked"
       ></datepicker>
@@ -105,7 +105,7 @@ export default {
       state: state,
       language: 'en',
       languages: DateLanguages.translations,
-      initialDate: new Date('2017-09-01T12:12:12'),
+      initialViewDate: new Date('2017-09-01T12:12:12'),
       selectedDate: null,
       date: new Date(),
       disabled: {
@@ -125,6 +125,7 @@ export default {
     dateClicked (date) {
       this.selectedDate = date
     },
+
     endDate () {
       let d = new Date()
       d.setMonth((d.getMonth() + 3) % 12)
