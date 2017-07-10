@@ -2,21 +2,21 @@
   <div class="vdp-datepicker">
 
     <!-- Day View -->
-    <div class="vdp-datepicker__calendar" v-show="showDayView" :style="calendarStyle">
+    <div :class="cc.svdCalWrapper" v-show="showDayView" :style="calendarStyle">
         <header>
             <span
                 @click="previousMonth"
-                class="prev"
-                v-bind:class="{ 'disabled' : previousMonthDisabled(currDate) }">&lt;</span>
+                :class="cc.svdCalPrev"
+            >&lt;</span>
             <span class="up">{{ currMonthName }} {{ currYear }}</span>
             <span
                 @click="nextMonth"
-                class="next"
-                v-bind:class="{ 'disabled' : nextMonthDisabled(currDate) }">&gt;</span>
+                :class="cc.svdCalNext"
+            >&gt;</span>
         </header>
-        <span class="cell day-header" v-for="d in daysOfWeek">{{ d }}</span>
+        <span :class="cc.svdCalDayNames" v-for="d in daysOfWeek">{{ d }}</span>
 
-        <div class="cell day" v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">{{ day.date }}</div>
+        <div v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">{{ day.date }}</div>
     </div>
   </div>
 </template>
@@ -25,6 +25,19 @@
 import DateUtils from '@/utils/DateUtils.js'
 import DateLanguages from '@/utils/DateLanguages.js'
 
+var defaultClasses = {
+  svdCalWrapper: 'svd-cal-wrapper',
+  svdCalPrev: 'svd-cal-prev',
+  svdCalNext: 'svd-cal-next',
+  svdCalDayNames: ['svd-cal-cell', 'svd-cal-day-names'],
+  svdCalDays: ['svd-cal-cell', 'svd-cal-day'],
+
+  svdDaySelected: 'svd-day-selected',
+  svdDayDisabled: 'svd-day-disabled',
+  svdDayHighlighted: 'svd-day-highlighted',
+  svdDayToday: 'svd-day-today'
+}
+
 export default {
   props: {
     value: {
@@ -32,7 +45,7 @@ export default {
         return val === null || val instanceof Date || typeof val === 'string'
       }
     },
-    initialDate: {
+    initialViewDate: {
       type: Date,
       default: null
     },
@@ -46,13 +59,11 @@ export default {
     inline: {
       type: Boolean
     },
-    clearButton: {
-      type: Boolean,
-      default: false
-    },
-    initialView: {
-      type: String,
-      default: 'day'
+    classes: {
+      type: Object,
+      default () {
+        return {}
+      }
     }
   },
   data () {
@@ -73,6 +84,13 @@ export default {
   },
 
   computed: {
+    cc () {
+      let c = Object.assign({}, defaultClasses, this.classes)
+      c.svdCalPrev = [{'disabled': this.prevMonthDisabled(this.currDate)}, c.svdCalPrev]
+      c.svdCalNext = [{'disabled': this.nextMonthDisabled(this.currDate)}, c.svdCalPrev]
+      return c
+    },
+
     viewMonth () {
       return this.viewDate
     },
@@ -166,12 +184,12 @@ export default {
     getDateObject (date) {
       if (date instanceof Date) {
         return date
-      } else if (typeof date === 'string' || typeof date === 'number') {
+      }
+      if (typeof date === 'string' || typeof date === 'number') {
         let d = new Date(date)
         return isNaN(d.valueOf()) ? null : d
-      } else {
-        return null
       }
+      return null
     },
 
     setViewDate (date) {
@@ -212,7 +230,7 @@ export default {
     },
 
     previousMonth () {
-      if (this.previousMonthDisabled()) {
+      if (this.prevMonthDisabled()) {
         return false
       }
 
@@ -222,7 +240,7 @@ export default {
       this.$emit('changedMonth', d)
     },
 
-    previousMonthDisabled () {
+    prevMonthDisabled () {
       return false
     },
 
@@ -303,22 +321,21 @@ export default {
         return false
       }
 
-      let highlighted = false
-
-      if (typeof this.highlighted === 'undefined') {
+      if (!this.highlighted) {
         return false
       }
 
-      if (typeof this.highlighted.dates !== 'undefined') {
-        this.highlighted.dates.forEach((d) => {
+      let highlighted = false
+
+      if (this.highlighted.dates) {
+        this.highlighted.dates.forEach(d => {
           if (date.toDateString() === d.toDateString()) {
             highlighted = true
-            return true
           }
         })
       }
 
-      if (this.isDefined(this.highlighted.from) && this.isDefined(this.highlighted.to)) {
+      if (this.highlighted.from && this.highlighted.to) {
         highlighted = date >= this.highlighted.from && date <= this.highlighted.to
       }
 
@@ -326,15 +343,6 @@ export default {
         highlighted = true
       }
       return highlighted
-    },
-
-    /**
-     * Helper
-     * @param  {mixed}  prop
-     * @return {Boolean}
-     */
-    isDefined (prop) {
-      return typeof prop !== 'undefined' && prop
     },
 
     /**
@@ -360,7 +368,7 @@ export default {
         return false
       }
 
-      if (typeof this.disabled.to !== 'undefined' && this.disabled.to) {
+      if (this.disabled.to) {
         if (
           (date.getMonth() < this.disabled.to.getMonth() && date.getFullYear() <= this.disabled.to.getFullYear()) ||
           date.getFullYear() < this.disabled.to.getFullYear()
@@ -368,7 +376,7 @@ export default {
           disabled = true
         }
       }
-      if (typeof this.disabled.from !== 'undefined' && this.disabled.from) {
+      if (this.disabled.from) {
         if (
           this.disabled.from &&
           (date.getMonth() > this.disabled.from.getMonth() && date.getFullYear() >= this.disabled.from.getFullYear()) ||
@@ -381,7 +389,7 @@ export default {
     },
 
     /**
-     * Whether a year is disabled
+     * Whether a year is selected
      * @param {Date}
      * @return {Boolean}
      */
@@ -396,16 +404,16 @@ export default {
      */
     isDisabledYear (date) {
       let disabled = false
-      if (typeof this.disabled === 'undefined' || !this.disabled) {
+      if (!this.disabled) {
         return false
       }
 
-      if (typeof this.disabled.to !== 'undefined' && this.disabled.to) {
+      if (this.disabled.to) {
         if (date.getFullYear() < this.disabled.to.getFullYear()) {
           disabled = true
         }
       }
-      if (typeof this.disabled.from !== 'undefined' && this.disabled.from) {
+      if (this.disabled.from) {
         if (date.getFullYear() > this.disabled.from.getFullYear()) {
           disabled = true
         }
@@ -415,12 +423,15 @@ export default {
     },
 
     dayClasses (day) {
-      return {
-        'selected': day.isSelected,
-        'disabled': day.isDisabled,
-        'highlighted': day.isHighlighted,
-        'today': day.isToday
+      let c = this.cc.svdCalDays.slice()
+      let conditionalClasses = {
+        [this.cc.svdDaySelected]: day.isSelected,
+        [this.cc.svdDayDisabled]: day.isDisabled,
+        [this.cc.svdDayHighlighted]: day.isHighlighted,
+        [this.cc.svdDayToday]: day.isToday
       }
+      c.push(conditionalClasses)
+      return c
     }
 
   },
@@ -434,8 +445,8 @@ export default {
       } else {
         this.setViewDate(new Date())
       }
-    } else if (this.initialDate) {
-      this.setViewDate(this.getDateObject(this.initialDate))
+    } else if (this.initialViewDate) {
+      this.setViewDate(this.getDateObject(this.initialViewDate))
     } else {
       this.setViewDate(new Date())
     }
@@ -456,7 +467,7 @@ $width = 300px
     *
         box-sizing border-box
 
-.vdp-datepicker__calendar
+.svd-cal-wrapper
     position absolute
     z-index 100
     background white
@@ -471,8 +482,8 @@ $width = 300px
             width (100 - (100/7)*2)%
             float left
 
-        .prev
-        .next
+        .svd-cal-prev
+        .svd-cal-next
             width (100/7)%
             float left
             text-indent -10000px
@@ -485,31 +496,32 @@ $width = 300px
                 transform translateX(-50%) translateY(-50%)
                 border 6px solid transparent
 
-        .prev
+        .svd-cal-prev
             &:after
                 border-right 10px solid #000
                 margin-left -5px
             &.disabled:after
                 border-right 10px solid #ddd
-        .next
+        .svd-cal-next
             &:after
                 border-left 10px solid #000
                 margin-left 5px
             &.disabled:after
                 border-left 10px solid #ddd
 
-        .prev:not(.disabled)
-        .next:not(.disabled)
+        .svd-cal-prev:not(.disabled)
+        .svd-cal-next:not(.disabled)
         .up:not(.disabled)
             cursor pointer
             &:hover
                 background #eee
 
+    .svd-day-disabled
     .disabled
         color #ddd
         cursor default
 
-    .cell
+    .svd-cal-cell
         display inline-block
         padding 0 5px
         width (100/7)%
@@ -518,29 +530,27 @@ $width = 300px
         text-align center
         vertical-align middle
         border 1px solid transparent
-        &:not(.blank):not(.disabled).day
-        &:not(.blank):not(.disabled).month
-        &:not(.blank):not(.disabled).year
+        &:not(.blank):not(.disabled).svd-cal-day
             cursor pointer
             &:hover
                 border 1px solid #4bd
-        &.selected
+        &.svd-day-selected
             background #4bd
             &:hover
                 background #4bd
             &.highlighted
                 background #4bd
-        &.highlighted
+        &.svd-day-highlighted
             background #cae5ed
         &.grey
             color #888
 
             &:hover
                 background inherit
-        &.today
+        &.svd-day-today
             border 2px solid yellow
 
-        &.day-header
+        &.svd-cal-day-names
             font-size 75%
             white-space no-wrap
             cursor inherit
