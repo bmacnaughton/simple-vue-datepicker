@@ -47,7 +47,7 @@ export default {
     },
     initialViewDate: {
       type: Date,
-      default: null
+      default: new Date()
     },
     language: {
       value: String,
@@ -77,9 +77,7 @@ export default {
       // selected date {Date}
       selectedDate: null,
       // which month is being displayed in the calendar
-      viewDate: new Date(Date.UTC(
-        new Date().getUTCFullYear(), new Date().getUTCMonth(), 1
-      )),
+      viewDate: this.setViewDate(new Date()),
       dbgRing: [],
 
       showDayView: false
@@ -102,7 +100,7 @@ export default {
       return DateUtils.getMonthNameAbbr(this.viewDate, this.translation.months.abbr)
     },
     currYear () {
-      return this.viewDate.getUTCFullYear()
+      return this.viewDate.getFullYear()
     },
     /**
      * Returns the day number of the week less one for the first of the current month
@@ -111,11 +109,7 @@ export default {
      */
     blankDays () {
       const d = this.viewDate
-      return new Date(Date.UTC(
-        d.getUTCFullYear(),
-        d.getUTCMonth(),
-        1,
-      )).getUTCDay()
+      return new Date(d.getFullYear(), d.getMonth(), 1).getDay()
     },
 
     daysOfWeek () {
@@ -145,26 +139,26 @@ export default {
       let days = []
       let dbgRing = []
 
-      let dObj = new Date(Date.UTC(
-        this.viewDate.getUTCFullYear(), this.viewDate.getUTCMonth(), 1,
-      ))
+      let dObj = new Date(
+        this.viewDate.getFullYear(), this.viewDate.getMonth(), 1,
+      )
       let dim = DateUtils.daysInMonth
-      let daysInMonth = dim(dObj.getUTCFullYear(), dObj.getUTCMonth())
+      let daysInMonth = dim(dObj.getFullYear(), dObj.getMonth())
       for (let i = 0; i < daysInMonth; i++) {
         // if (i === 11) debugger
         dbgRing.push({
-          date: dObj.getUTCDate(),
+          date: dObj.getDate(),
           ts: dObj.getTime()
         })
         days.push({
-          date: dObj.getUTCDate(),
+          date: dObj.getDate(),
           timestamp: dObj.getTime(),
           isSelected: this.isSelectedDate(dObj),
           isDisabled: this.isDisabledDate(dObj),
           isHighlighted: this.isHighlightedDate(dObj),
           isToday: DateUtils.dmyEqual(new Date(), dObj)
         })
-        dObj.setUTCDate(dObj.getUTCDate() + 1)
+        dObj.setDate(dObj.getDate() + 1)
       }
       this.dbgRing = dbgRing
       return days
@@ -201,6 +195,7 @@ export default {
     setViewDate (date) {
       let d = date.getTime()
       this.viewDate = new Date(d - d % 86400000)
+      return this.viewDate
     },
 
     showDayCalendar () {
@@ -241,7 +236,7 @@ export default {
       }
 
       let d = new Date(this.viewDate)
-      d.setUTCMonth(d.getUTCMonth() - 1)
+      d.setMonth(d.getMonth() - 1)
       this.setViewDate(d)
       this.$emit('changedMonth', d)
     },
@@ -270,9 +265,9 @@ export default {
     //
     norm (date) {
       return new Date(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
         0, 0, 0
       )
     },
