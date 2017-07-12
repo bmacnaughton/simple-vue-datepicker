@@ -59,12 +59,6 @@ export default {
     inline: {
       type: Boolean
     },
-    // the timezone offset. If it is the default
-    // then use "local" time
-    offset: {
-      type: Number,
-      default: (new Date()).getTimezoneOffset()
-    },
     classes: {
       type: Object,
       default () {
