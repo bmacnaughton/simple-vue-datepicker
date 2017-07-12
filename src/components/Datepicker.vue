@@ -59,6 +59,12 @@ export default {
     inline: {
       type: Boolean
     },
+    // the timezone offset. If it is the default
+    // then use "local" time
+    offset: {
+      type: Number,
+      default: (new Date()).getTimezoneOffset()
+    },
     classes: {
       type: Object,
       default () {
@@ -68,42 +74,35 @@ export default {
   },
   data () {
     return {
-      /*
-       * Vue cannot observe changes to a Date Object so date must be stored as a timestamp
-       * This represents the first day of the current viewing month
-       * {Number}
-       */
-      currDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime(),
       // selected date {Date}
       selectedDate: null,
       // which month is being displayed in the calendar
-      viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      viewDate: new Date(Date.UTC(
+        new Date().getUTCFullYear(), new Date().getUTCMonth(), 1
+      )),
+      dbgRing: [],
 
       showDayView: false
     }
   },
 
   computed: {
+    // calendar classes
     cc () {
       let c = Object.assign({}, defaultClasses, this.classes)
-      c.svdCalPrev = [{'disabled': this.prevMonthDisabled(this.currDate)}, c.svdCalPrev]
-      c.svdCalNext = [{'disabled': this.nextMonthDisabled(this.currDate)}, c.svdCalPrev]
+      c.svdCalPrev = [{'disabled': this.prevMonthDisabled(this.viewDate)}, c.svdCalPrev]
+      c.svdCalNext = [{'disabled': this.nextMonthDisabled(this.viewDate)}, c.svdCalPrev]
       return c
-    },
-
-    viewMonth () {
-      return this.viewDate
     },
 
     translation () {
       return DateLanguages.translations[this.language]
     },
     currMonthName () {
-      return DateUtils.getMonthNameAbbr(this.viewMonth, this.translation.months.abbr)
+      return DateUtils.getMonthNameAbbr(this.viewDate, this.translation.months.abbr)
     },
     currYear () {
-      const d = new Date(this.currDate)
-      return d.getFullYear()
+      return this.viewDate.getUTCFullYear()
     },
     /**
      * Returns the day number of the week less one for the first of the current month
@@ -111,8 +110,12 @@ export default {
      * @return {Number}
      */
     blankDays () {
-      const d = this.viewMonth
-      return new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes()).getDay()
+      const d = this.viewDate
+      return new Date(Date.UTC(
+        d.getUTCFullYear(),
+        d.getUTCMonth(),
+        1,
+      )).getUTCDay()
     },
 
     daysOfWeek () {
@@ -140,27 +143,30 @@ export default {
 
     days () {
       let days = []
-      // first insert the blank days (previous month's days)
-      // now set up the days of the month. start with the first day of the month
-      // based on this.currDate
-      // const d = new Date(this.dayCalendarDate)
-      const d = this.viewMonth
-      // let dObj = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
-      // start days at beginning
-      let dObj = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0)
+      let dbgRing = []
+
+      let dObj = new Date(Date.UTC(
+        this.viewDate.getUTCFullYear(), this.viewDate.getUTCMonth(), 1,
+      ))
       let dim = DateUtils.daysInMonth
-      let daysInMonth = dim(dObj.getFullYear(), dObj.getMonth())
+      let daysInMonth = dim(dObj.getUTCFullYear(), dObj.getUTCMonth())
       for (let i = 0; i < daysInMonth; i++) {
+        // if (i === 11) debugger
+        dbgRing.push({
+          date: dObj.getUTCDate(),
+          ts: dObj.getTime()
+        })
         days.push({
-          date: dObj.getDate(),
+          date: dObj.getUTCDate(),
           timestamp: dObj.getTime(),
           isSelected: this.isSelectedDate(dObj),
           isDisabled: this.isDisabledDate(dObj),
           isHighlighted: this.isHighlightedDate(dObj),
           isToday: DateUtils.dmyEqual(new Date(), dObj)
         })
-        dObj.setDate(dObj.getDate() + 1)
+        dObj.setUTCDate(dObj.getUTCDate() + 1)
       }
+      this.dbgRing = dbgRing
       return days
     },
 
@@ -193,7 +199,8 @@ export default {
     },
 
     setViewDate (date) {
-      this.viewDate = date
+      let d = date.getTime()
+      this.viewDate = new Date(d - d % 86400000)
     },
 
     showDayCalendar () {
@@ -203,7 +210,6 @@ export default {
 
     setDate (timestamp) {
       this.selectedDate = new Date(timestamp)
-      this.currDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), 1).getTime()
       this.$emit('selected', new Date(timestamp))
       this.$emit('input', this.selectedDate)
     },
@@ -234,9 +240,9 @@ export default {
         return false
       }
 
-      let d = new Date(this.viewMonth)
-      d.setMonth(d.getMonth() - 1)
-      this.viewDate = d
+      let d = new Date(this.viewDate)
+      d.setUTCMonth(d.getUTCMonth() - 1)
+      this.setViewDate(d)
       this.$emit('changedMonth', d)
     },
 
@@ -251,7 +257,7 @@ export default {
       let d = new Date(this.viewDate)
       let daysInMonth = DateUtils.daysInMonth(d.getFullYear(), d.getMonth())
       d.setDate(d.getDate() + daysInMonth)
-      this.viewDate = d
+      this.setViewDate(d)
       this.$emit('changedMonth', d)
     },
 
@@ -364,7 +370,7 @@ export default {
     isDisabledMonth (date) {
       let disabled = false
 
-      if (typeof this.disabled === 'undefined') {
+      if (!this.disabled) {
         return false
       }
 
