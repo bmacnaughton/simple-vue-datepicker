@@ -52,16 +52,13 @@ export default {
    * @return {String}
    */
   getMonthNameAbbr (month, monthsAbbr) {
-    if (!monthsAbbr) {
-      throw Error('missing 2nd paramter Months array')
-    }
     if (typeof month === 'object') {
       return monthsAbbr[month.getMonth()]
     }
     if (typeof month === 'number') {
       return monthsAbbr[month]
     }
-    throw TypeError('Invalid type')
+    return ''
   },
 
   /**
