@@ -105,13 +105,23 @@ export default {
       state: state,
       language: 'en',
       languages: DateLanguages.translations,
-      initialViewDate: new Date('2017-09-01T12:12:12'),
+      initialViewDate: null,
       selectedDate: null,
-      date: new Date(),
+      date: null,
       disabled: {
         days: [0],
         to: new Date(),
-        from: this.endDate()
+        from: this.endDate(),
+        dates: [
+          new Date(1499954400000),
+          new Date(1499943600000),
+          new Date(1499950800000),
+          new Date(1499947200000),
+          new Date(1499958000000),
+          new Date(1499961600000),
+          new Date(1499965200000),
+          new Date(1499968800000)
+        ]
       }
     }
   },
