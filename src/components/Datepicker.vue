@@ -7,12 +7,12 @@
             <span
                 @click="previousMonth"
                 :class="cc.svdCalPrev"
-            >&lt;</span>
+            ></span>
             <span class="up">{{ currMonthName }} {{ currYear }}</span>
             <span
                 @click="nextMonth"
                 :class="cc.svdCalNext"
-            >&gt;</span>
+            ></span>
         </header>
         <span :class="cc.svdCalDayNames" v-for="d in daysOfWeek">{{ d }}</span>
 
@@ -74,7 +74,6 @@ export default {
       selectedDate: null,
       // which month is being displayed in the calendar
       viewDate: this.setViewDate(new Date()),
-
       showDayView: false
     }
   },
@@ -456,53 +455,37 @@ $width = 300px
         box-sizing border-box
 
 .svd-cal-wrapper
-    position absolute
-    z-index 100
     background white
     width $width
-    border 1px solid #ccc
     header
-        display block
+        display flex
         line-height 40px
         span
-            display inline-block
+            display block
             text-align center
             width (100 - (100/7)*2)%
-            float left
 
         .svd-cal-prev
         .svd-cal-next
             width (100/7)%
-            float left
-            text-indent -10000px
             position relative
-            &:after
-                content ''
-                position absolute
-                left 50%
-                top 50%
-                transform translateX(-50%) translateY(-50%)
-                border 6px solid transparent
 
         .svd-cal-prev
             &:after
-                border-right 10px solid #000
-                margin-left -5px
+                content '<'
             &.disabled:after
-                border-right 10px solid #ddd
+                opacity 0.5
         .svd-cal-next
             &:after
-                border-left 10px solid #000
-                margin-left 5px
+                content '>'
             &.disabled:after
-                border-left 10px solid #ddd
-
+                opacity 0.5
         .svd-cal-prev:not(.disabled)
         .svd-cal-next:not(.disabled)
         .up:not(.disabled)
             cursor pointer
             &:hover
-                background #eee
+                background #ddd
 
     .svd-day-disabled
     .disabled
@@ -511,7 +494,6 @@ $width = 300px
 
     .svd-cal-cell
         display inline-block
-        padding 0 5px
         width (100/7)%
         height 40px
         line-height 40px
@@ -521,29 +503,24 @@ $width = 300px
         &:not(.blank):not(.disabled).svd-cal-day
             cursor pointer
             &:hover
-                border 1px solid #4bd
+                border-color #ddd
         &.svd-day-selected
-            background #4bd
-            &:hover
-                background #4bd
+            background #ddd
             &.highlighted
-                background #4bd
+                background #ddd
         &.svd-day-highlighted
-            background #cae5ed
+            background #ddd
         &.grey
             color #888
 
             &:hover
                 background inherit
         &.svd-day-today
-            border 2px solid yellow
+            border-color #ddd
 
         &.svd-cal-day-names
             font-size 75%
-            white-space no-wrap
-            cursor inherit
-            &:hover
-                background inherit
+            white-space nowrap
 
     .month,
     .year
