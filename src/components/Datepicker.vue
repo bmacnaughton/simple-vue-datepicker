@@ -47,7 +47,9 @@ export default {
     },
     initialViewDate: {
       type: Date,
-      default: new Date()
+      default () {
+        return new Date()
+      }
     },
     language: {
       value: String,
@@ -72,7 +74,6 @@ export default {
       selectedDate: null,
       // which month is being displayed in the calendar
       viewDate: this.setViewDate(new Date()),
-      dbgRing: [],
 
       showDayView: false
     }
@@ -131,19 +132,12 @@ export default {
 
     days () {
       let days = []
-      let dbgRing = []
-
       let dObj = new Date(
-        this.viewDate.getFullYear(), this.viewDate.getMonth(), 1,
+        this.viewDate.getFullYear(), this.viewDate.getMonth(), 1
       )
       let dim = DateUtils.daysInMonth
       let daysInMonth = dim(dObj.getFullYear(), dObj.getMonth())
       for (let i = 0; i < daysInMonth; i++) {
-        // if (i === 11) debugger
-        dbgRing.push({
-          date: dObj.getDate(),
-          ts: dObj.getTime()
-        })
         days.push({
           date: dObj.getDate(),
           timestamp: dObj.getTime(),
@@ -154,7 +148,6 @@ export default {
         })
         dObj.setDate(dObj.getDate() + 1)
       }
-      this.dbgRing = dbgRing
       return days
     },
 
