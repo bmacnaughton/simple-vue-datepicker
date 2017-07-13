@@ -112,7 +112,7 @@ export default {
         days: [0],
         to: new Date(),
         from: this.endDate(),
-        dates: [
+        dates: this.foldSlots([
           new Date(1499954400000),
           new Date(1499943600000),
           new Date(1499950800000),
@@ -121,7 +121,7 @@ export default {
           new Date(1499961600000),
           new Date(1499965200000),
           new Date(1499968800000)
-        ]
+        ])
       }
     }
   },
@@ -140,7 +140,33 @@ export default {
       let d = new Date()
       d.setMonth((d.getMonth() + 3) % 12)
       return d
+    },
+
+    foldSlots (timestamps) {
+      let bookedSlotsMap = {}
+      if (!timestamps) return bookedSlotsMap
+
+      timestamps.forEach(s => {
+        let d = new Date(s)
+        let text = d.toISOString()
+        let date = text.slice(0, 10)
+        let slot = text.slice(11, 16)
+        if (!(date in bookedSlotsMap)) {
+          bookedSlotsMap[date] = []
+        }
+        bookedSlotsMap[date].push(slot)
+      })
+
+      let fullyBookedDates = []
+      for (let d in bookedSlotsMap) {
+        if (bookedSlotsMap[d].length === 8) {
+          let ymd = d.split('-')
+          fullyBookedDates.push(new Date(ymd[0], ymd[1] - 1, ymd[2]))
+        }
+      }
+      return fullyBookedDates
     }
+
   },
 
   watch: {
