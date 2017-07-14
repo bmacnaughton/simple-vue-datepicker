@@ -32,6 +32,7 @@ var defaultClasses = {
   svdCalDayNames: ['svd-cal-cell', 'svd-cal-day-names'],
   svdCalDays: ['svd-cal-cell', 'svd-cal-day'],
 
+  svdDayBlank: 'svd-day-blank',
   svdDaySelected: 'svd-day-selected',
   svdDayDisabled: 'svd-day-disabled',
   svdDayHighlighted: 'svd-day-highlighted',
