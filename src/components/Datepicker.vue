@@ -83,7 +83,7 @@ export default {
     cc () {
       let c = Object.assign({}, defaultClasses, this.classes)
       c.svdCalPrev = [{'disabled': this.prevMonthDisabled(this.viewDate)}, c.svdCalPrev]
-      c.svdCalNext = [{'disabled': this.nextMonthDisabled(this.viewDate)}, c.svdCalPrev]
+      c.svdCalNext = [{'disabled': this.nextMonthDisabled(this.viewDate)}, c.svdCalNext]
       return c
     },
 
@@ -120,6 +120,7 @@ export default {
         slots.push({
           date: '',
           timestamp: i,
+          isBlank: true,
           isSelected: false,
           isDisabled: true,
           isHighlighted: false,
@@ -412,6 +413,7 @@ export default {
     dayClasses (day) {
       let c = this.cc.svdCalDays.slice()
       let conditionalClasses = {
+        [this.cc.svdDayBlank]: day.isBlank,
         [this.cc.svdDaySelected]: day.isSelected,
         [this.cc.svdDayDisabled]: day.isDisabled,
         [this.cc.svdDayHighlighted]: day.isHighlighted,
