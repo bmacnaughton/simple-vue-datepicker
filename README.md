@@ -71,6 +71,7 @@ Inline always open version
 | disabled              | Object       |             | See below for configuration              |
 | inline                | Boolean      |             | To show the datepicker always open       |
 | initialViewDate       | Date/String  | value       | Year/month to initially show on calendar |
+| mondayFirst           | Boolean      | false       | Show Monday as first day of week         |
 
 ## Events
 
