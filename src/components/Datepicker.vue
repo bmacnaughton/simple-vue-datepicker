@@ -108,7 +108,7 @@ export default {
     blankDays () {
       const d = this.viewDate
       let day = new Date(d.getFullYear(), d.getMonth(), 1).getDay()
-      return this.mondayFirst ? day - 1 : day
+      return this.mondayFirst ? (day + 6) % 7 : day
     },
 
     daysOfWeek () {
