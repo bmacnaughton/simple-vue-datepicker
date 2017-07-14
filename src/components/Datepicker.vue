@@ -55,6 +55,9 @@ export default {
       value: String,
       default: 'en'
     },
+    disabled: {
+      type: Object
+    },
     inline: {
       type: Boolean
     },
