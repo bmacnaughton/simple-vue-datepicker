@@ -63,6 +63,10 @@ export default {
       default () {
         return {}
       }
+    },
+    mondayFirst: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -100,11 +104,16 @@ export default {
      */
     blankDays () {
       const d = this.viewDate
-      return new Date(d.getFullYear(), d.getMonth(), 1).getDay()
+      let day = new Date(d.getFullYear(), d.getMonth(), 1).getDay()
+      return this.mondayFirst ? day - 1 : day
     },
 
     daysOfWeek () {
-      return this.translation.days
+      let dayNames = this.translation.days.slice()
+
+      if (!this.mondayFirst) return dayNames
+
+      return dayNames.slice(1).concat(dayNames[0])
     },
 
     displaySlots () {

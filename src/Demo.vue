@@ -73,6 +73,7 @@
       <datepicker
         v-model="date"
         :inline="true"
+        :mondayFirst="true"
         :initialViewDate="initialViewDate"
         :disabled="disabled"
         @selected="dateClicked"
