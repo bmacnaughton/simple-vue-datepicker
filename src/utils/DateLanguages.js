@@ -46,7 +46,7 @@ export default {
         'original': ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
         'abbr': ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
       },
-      'days': ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      'days': ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
     },
     'ee': {
       'language': 'Estonian',

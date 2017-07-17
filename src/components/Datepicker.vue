@@ -14,9 +14,15 @@
                 :class="cc.svdCalNext"
             ></span>
         </header>
-        <span :class="cc.svdCalDayNames" v-for="d in daysOfWeek">{{ d }}</span>
 
-        <div v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">{{ day.date }}</div>
+        <div :class="cc.svdCalDayNames" v-for="d in daysOfWeek">
+          <span>{{ d }}</span>
+        </div>
+
+        <div v-for="day in displaySlots" :class="dayClasses(day)" @click="selectDate(day)">
+          <span>{{ day.date }}</span>
+        </div>
+
     </div>
   </div>
 </template>
